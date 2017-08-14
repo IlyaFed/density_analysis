@@ -175,13 +175,16 @@ int box::atom_flaged(){
 	//	cerr << "atom " << i << endl;
 		for( int l =0; l < 3; l++)
 			first[l] =  atoms->_x[i*3+l]*wall[l];
-
+			//if (rho_cut < 37) cerr << "rho flag = " << *rho->flag(first) << endl;
 		for (a[0] = 0; a[0] < 2; a[0]++)
 			for (a[1] = 0; a[1] < 2; a[1]++)
 				for (a[2] = 0; a[2] < 2; a[2]++) {
 					for(int l = 0; l < 3; l++)
 						second[l] = (first[l] + a[l]) % wall[l];
-					if (*rho->flag(second) != 0) atoms->flag[i] = *rho->flag(second);
+
+					if (*rho->flag(second) != 0)  {
+						atoms->flag[i] = *rho->flag(second);
+					}
 		}
 	}
 	return 0;

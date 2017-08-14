@@ -1,42 +1,77 @@
 set terminal png
-set output "graph.png"
+set output "image/graph.png"
 set xlabel "density cut"
 set ylabel "Number of types"
 set title "Try"
 set key autotitle columnhead
-#set yrange [0: 3000]
-plot "count_dependense.txt" u  1:3 with line , \
-    "count_dependense.txt" u  1:4 with line, \
-    "count_dependense.txt" u  1:5 with line, \
-    "count_dependense.txt" u  1:6 with line, \
-    "count_dependense.txt" u  1:7 with line, \
-    "count_dependense.txt" u  1:8 with line, \
-    "count_dependense.txt" u  1:9 with line, \
-    "count_dependense.txt" u  1:10 with line, \
-    "count_dependense.txt" u  1:11 with line, \
-    "count_dependense.txt" u  1:12 with line, \
-    "count_dependense.txt" u  1:13 with point, \
-    "count_dependense.txt" u  1:2 with line, \
-# plot "count_dependense.txt" u  1:2 title "H+" with line , \
-#     "count_dependense.txt" u  1:3 title "H" with line, \
-#     "count_dependense.txt" u  1:4 title "H2+" with line, \
-#     "count_dependense.txt" u  1:7 title "H2" with line, \
-#     "count_dependense.txt" u  1:11 title "real_el" with line, \
+plot "output/count_dependense.txt" u  1:3 with line , \
+    "output/count_dependense.txt" u  1:4 with line, \
+    "output/count_dependense.txt" u  1:5 with line, \
+    "output/count_dependense.txt" u  1:6 with line, \
+    "output/count_dependense.txt" u  1:7 with line, \
+    "output/count_dependense.txt" u  1:8 with line, \
+    "output/count_dependense.txt" u  1:9 with line, \
+    "output/count_dependense.txt" u  1:10 with line, \
+    "output/count_dependense.txt" u  1:11 with line, \
+    "output/count_dependense.txt" u  1:12 with line, \
+    "output/count_dependense.txt" u  1:13 with point, \
+    "output/count_dependense.txt" u  1:2 with line
 reset
 
 set terminal png
-set output "graph_2.png"
+set output "image/neigbours_atom.png"
+set xlabel "density cut"
+set ylabel "Number of neibours"
+set title "Neibours dependense for atom"
+set key autotitle columnhead
+plot "output/neigbour_atom_dependense.txt" u  1:2 with line , \
+    "output/neigbour_atom_dependense.txt" u  1:3 with line , \
+    "output/neigbour_atom_dependense.txt" u  1:4 with line , \
+    "output/neigbour_atom_dependense.txt" u  1:5 with line , \
+    "output/neigbour_atom_dependense.txt" u  1:6 with line
+reset
+
+set terminal png
+set output "image/neigbours_electron.png"
+set xlabel "density cut"
+set ylabel "Number of neibours"
+set title "Neibours dependense for electrons"
+set key autotitle columnhead
+plot "output/neigbour_electron_dependense.txt" u  1:2 with line , \
+    "output/neigbour_electron_dependense.txt" u  1:3 with line , \
+    "output/neigbour_electron_dependense.txt" u  1:4 with line , \
+    "output/neigbour_electron_dependense.txt" u  1:5 with line , \
+    "output/neigbour_electron_dependense.txt" u  1:6 with line
+reset
+
+
+set terminal png
+set output "image/neigbours_comm.png"
+set xlabel "density cut"
+set ylabel "Number of neibours"
+set title "Neibours dependense for electrons and atoms"
+set key autotitle columnhead
+plot "output/neigbour_comm_dependense.txt" u  1:2 with line , \
+    "output/neigbour_comm_dependense.txt" u  1:3 with line , \
+    "output/neigbour_comm_dependense.txt" u  1:4 with line , \
+    "output/neigbour_comm_dependense.txt" u  1:5 with line , \
+    "output/neigbour_comm_dependense.txt" u  1:6 with line
+reset
+
+
+set terminal png
+set output "image/graph_2.png"
 set xlabel "density cut"
 set ylabel "Number of types"
 set title "Try"
 set key autotitle columnhead
 #set yrange [0: 3000]
-plot "count_dependense_2.txt" u  1:3  with line , \
-    "count_dependense_2.txt" u  1:4  with line, \
-    "count_dependense_2.txt" u  1:5  with line, \
-    "count_dependense_2.txt" u  1:6  with line, \
-    "count_dependense_2.txt" u  1:2  with line, \
-    "count_dependense_2.txt" u  1:13 with line
+plot "output/count_dependense_2.txt" u  1:3  with line , \
+    "output/count_dependense_2.txt" u  1:4  with line, \
+    "output/count_dependense_2.txt" u  1:5  with line, \
+    "output/count_dependense_2.txt" u  1:6  with line, \
+    "output/count_dependense_2.txt" u  1:2  with line, \
+    "output/count_dependense_2.txt" u  1:13 with line
 # plot "count_dependense_2.txt" u  1:2 title "H+" with line , \
 #     "count_dependense_2.txt" u  1:3 title "H" with line, \
 #     "count_dependense_2.txt" u  1:4 title "H2+" with line, \

@@ -14,6 +14,8 @@ public:
 	double *_x; //coordinates of all atoms
 	int *flag;
 	int N;
+	int *neigbours_atom;
+	int *neigbours_electron;
 
 	atom(int _N);
 	~atom();
@@ -94,7 +96,7 @@ public:
 	areas *area = NULL;
 	atom *atoms = NULL;
 	int wall[3];
-	int rho_cut = 0;
+	double rho_cut = 0;
 
 	box(FILE* input);
 	~box();

@@ -18,10 +18,10 @@ areas::areas(atom* _atoms, int _N_electron){
   _gistogram = new int [_max_gist];
   for (int i = 0; i < _max_gist; i++) _gistogram[i] = 0;
   last = new area_tree();
+  last->count = 1;
   start = last;
   last->next = NULL;
   last->prev = NULL;
-  last->count = 0;
   }
 
 areas::~areas(){
@@ -37,21 +37,19 @@ int areas::analysis(double rho_cut){
 	mass += last->mass;
 	_to_print = new int [N];
 	_to_print_last = 0;
-
  	double coeff = mass / N_electron;
 	area_tree* buf = start;
 	N_electron_real = 0;
 	while (buf != NULL){
 		buf->N_electron = round(buf->mass/coeff);
-//    cerr << "mass[" << buf->count  << "] " << 1.0*buf->mass/coeff << endl;
+
 		N_electron_real += buf->N_electron;
 
 		for (int i = 0; i < atoms->N; i ++)
 			if (atoms->flag[i] == buf->count) buf->N_atom++;
 
 		gist_add(buf->N_atom, buf->N_electron);
-
-		//smth_useful(rho_cut, buf);
+		smth_useful(rho_cut, buf);
 
 		buf = buf->next;
 	}
@@ -61,10 +59,15 @@ int areas::analysis(double rho_cut){
 
 
 int areas::smth_useful(double rho_cut, area_tree* buf){
-	if (rho_cut != 96 || buf->N_atom != 0)  return 0;
-	cerr << "empty" << endl;
-	_to_print[_to_print_last] = buf->count;
-	_to_print_last++;
+  for (int i = 0; i < atoms->N; i++)
+    if (atoms->flag[i] == buf->count) {
+      atoms->neigbours_atom[i] = buf->N_atom;
+      atoms->neigbours_electron[i] = buf->N_electron;
+    }
+	// if (rho_cut != 96 || buf->N_atom != 0)  return 0;
+	// cerr << "empty" << endl;
+	// _to_print[_to_print_last] = buf->count;
+	// _to_print_last++;
 	return 0;
 }
 

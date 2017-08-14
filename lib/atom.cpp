@@ -15,12 +15,16 @@ atom::atom(int _N){
   N = _N;
   _x = new double [N*3];
   flag = new int [N];
+  neigbours_atom = new int [N];
+  neigbours_electron = new int [N];
   clear();
 }
 
 atom::~atom(){
   delete[] _x;
   delete[] flag;
+  delete[] neigbours_atom;
+  delete[] neigbours_electron;
 }
 
 int atom::clear(){
