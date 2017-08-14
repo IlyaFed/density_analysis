@@ -148,6 +148,38 @@ int box::create_areas(const double _rho_cut){
 	}
   atom_flaged();
 	area->analysis(rho_cut);
+	atom_connect();
+	return 0;
+}
+
+int box::atom_connect(){
+	int level = (atoms->N + rho->N_electron) * 0.2;
+	for( int i = 0; i < atoms->N; i++)
+		if(atoms->_fix_area[i] == 0 && (atoms->neigbours_atom[i] + atoms->neigbours_electron[i]) < level) {
+			//cerr << "rho_cut " << rho_cut << endl;
+			rho->fix_area(atoms->flag[i]);
+			atoms->fix_area(atoms->flag[i]);
+		}
+	return 0;
+}
+
+int box::print_areas(string input_name){
+	rho->fix_to_print();
+	write(input_name);
+	return 0;
+}
+
+int box::make_molecule(string input_name){
+	double start = rho->min;
+  double stop = rho->max;
+	double step = (stop-start) / 100.0;
+
+	for( double rho_cut = start; rho_cut < stop; rho_cut+= step){
+  	create_areas(rho_cut);
+	  clear();
+	}
+
+	print_areas("output/CHGCAR");
 	return 0;
 }
 

@@ -16,20 +16,38 @@ using namespace std;
 
 density::density(int* _wall){
 	N = _wall[0]*_wall[1]*_wall[2];
+
 	for( int l = 0; l < 3; l++ ) wall[l] = _wall[l];
 	_in = new double [N];
 	_to_print = new double [N];
 	_flag = new int [N];
+	_fix_area = new int [N];
+	for (int i = 0; i < N; i++) _fix_area[i] = 0;
 }
 
 density::~density(){
 	delete[] _in;
 	delete[] _to_print;
 	delete[] _flag;
+	delete[] _fix_area;
 }
 
 int density::clear(){
 	for( int i = 0; i < N; i ++) _flag[i] = 0;
+	return 0;
+}
+
+int density::fix_area(int count){
+	for( int i = 0; i < N; i ++)
+		if(_flag[i] == count) _fix_area[i] = _last_fix;
+	_last_fix++;
+	return 0;
+}
+
+int density::fix_to_print(){
+	for( int i = 0; i < N; i++)
+		if (_fix_area[i] != 0) _to_print[i] = (max+min)/2;
+		else _to_print[i] = 0;
 	return 0;
 }
 double*	density::in(int* x){

@@ -15,8 +15,11 @@ atom::atom(int _N){
   N = _N;
   _x = new double [N*3];
   flag = new int [N];
+  _fix_area = new int [N];
+  for (int i = 0; i < N; i++) _fix_area[i] = 0;
   neigbours_atom = new int [N];
   neigbours_electron = new int [N];
+
   clear();
 }
 
@@ -25,6 +28,7 @@ atom::~atom(){
   delete[] flag;
   delete[] neigbours_atom;
   delete[] neigbours_electron;
+  delete[] _fix_area;
 }
 
 int atom::clear(){
@@ -47,4 +51,12 @@ int atom::add(int i, double* coord){
     _x[i*3+l] = coord[l];
   return 0;
 }
+
+int atom::fix_area(int count){
+	for( int i = 0; i < N; i ++)
+		if(flag[i] == count) _fix_area[i] = _last_fix;
+	_last_fix++;
+	return 0;
+}
+
 #endif // __ATOM_CPP__

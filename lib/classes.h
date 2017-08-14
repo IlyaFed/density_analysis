@@ -16,6 +16,8 @@ public:
 	int N;
 	int *neigbours_atom;
 	int *neigbours_electron;
+	int *_fix_area = NULL;
+	int _last_fix = 1;
 
 	atom(int _N);
 	~atom();
@@ -23,13 +25,15 @@ public:
 	double* x(int i);
 	char* print(int i);
 	int add(int i, double* coord);
-
+	int fix_area(int count);
 };
 
 class density{
 public:
 	double *_in = NULL;
 	double *_to_print = NULL;
+	int *_fix_area = NULL;
+	int _last_fix = 1;
 	int N;
 	double min;
 	double max;
@@ -44,7 +48,8 @@ public:
 	double* in(int a, int b, int c);
 	int* flag(int* x);
 	int* flag(int x, int y, int z);
-
+	int fix_area(int count);
+	int fix_to_print();
 };
 
 class area_tree
@@ -109,6 +114,10 @@ public:
 	int find_all(area_tree* buf, int* x, double density_cut, int flag_point);
 	int atom_flaged();
 	int print_atoms(string name);
+	int atom_connect();
+	int print_areas(string input_name);
+
+	int make_molecule(string input_name);
 
 	int* x(int coord);
 	int len(int* x);
