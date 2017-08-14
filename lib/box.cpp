@@ -154,6 +154,7 @@ int box::create_areas(const double _rho_cut){
 
 int box::atom_connect(){
 	int level = (atoms->N + rho->N_electron) * 0.2;
+	level = 20; // atoms + electrons more than 20 - unreal
 	for( int i = 0; i < atoms->N; i++)
 		if(atoms->_fix_area[i] == 0 && (atoms->neigbours_atom[i] + atoms->neigbours_electron[i]) < level) {
 			//cerr << "rho_cut " << rho_cut << endl;

@@ -13,7 +13,7 @@ int main(int argc, char* argv[]){
 
 // reading CHGCAR file
 	FILE *input_file;
-  input_file = fopen("source_for_test/CHGCAR_1", "r");
+  input_file = fopen("source_for_test/CHGCAR_2", "r");
 	box *test_box = new box(input_file);
   fclose(input_file);
 

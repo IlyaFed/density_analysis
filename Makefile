@@ -1,6 +1,6 @@
 all:
 	g++ -std=c++11 -ggdb lib/density.cpp lib/areas.cpp lib/atom.cpp lib/box.cpp main.cpp -o p
-	./p source_for_test/CHGCAR_1
+	./p source_for_test/CHGCAR_2
 	rm p
 	rm -r p.dSYM
 
@@ -9,7 +9,7 @@ test:
 	./test_dft_analysis
 	gnuplot plot.txt
 	rm test_dft_analysis
-	r, -r test_dft_analysis.dSYM
+	rm -r test_dft_analysis.dSYM
 
 clean:
 	rm -f dft_analysis
