@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 
+#define Ab 0.52917720859
 
 using namespace std;
 
@@ -21,9 +22,19 @@ box::box(FILE* input){
 int box::read(FILE* input){
 	cerr << "start reading box \n" << endl;
 	char buf[100];
-	for( int i = 0; i < 6; i++) {
-		fgets(buf, 100, input);
-	}
+	//for( int i = 0; i < 6; i++) {
+	fgets(buf, 100, input);
+	fgets(buf, 100, input);
+	double read_x,read_y, read_z;
+	fscanf(input, "%lf %lf %lf", &read_x, &read_y, &read_z);
+	lat[0] = read_x;
+	fscanf(input, "%lf %lf %lf", &read_x, &read_y, &read_z);
+	lat[1] = read_y;
+	fscanf(input, "%lf %lf %lf", &read_x, &read_y, &read_z);
+	lat[2] = read_z;
+	cerr << "wall " << lat[0] << " "<< lat[1] << " " << lat[2] << endl;
+	fgets(buf, 100, input);
+	fgets(buf, 100, input);
 
   // read atoms coordinates
   int N_atom;
@@ -39,11 +50,11 @@ int box::read(FILE* input){
     atoms->add(i, x);
   }
 	//fscanf(input, "%s", buf);
-
+ cerr << "read density" << endl;
   // read density in lattice
 	fscanf(input, "%d\t%d\t%d", &wall[0], &wall[1], &wall[2]);
 	cerr << "wall: " << wall[0] << " " << wall[1] << " " << wall[2] << endl;
-	rho = new density(wall);
+	rho = new density(wall, &level);
 
 	fscanf(input, "%lf", &rho->_in[0]);
 	rho->min = rho->_in[0];
@@ -65,26 +76,45 @@ int box::read(FILE* input){
 	return 0;
 }
 
-int box::write(string input_name){
+int box::write(string input_name, int rho_flag){
 	ofstream foutput;
 	foutput.open(input_name);
 	cerr << "start writing box \n" << endl;
 
 	foutput << "unknown system\n 1" << endl;
-	foutput << "4.000000    0.000000    0.000000" << endl;
-	foutput << "0.000000    4.000000    0.000000" << endl;
-	foutput << "0.000000    0.000000    4.000000" << endl;
+	foutput << lat[0] << "    0.000000    0.000000" << endl;
+	foutput << "0.000000    " << lat[1] << "    0.000000" << endl;
+	foutput << "0.000000    0.000000    " << lat[2] << endl;
 //	int N_atom_print = 0;
 //	for (int i = 0; i < N_atom; i ++) if(atom_flag == 0) N_atom_print++;
-	foutput << "H\n" << atoms->N << endl;
-	foutput << "Direct" << endl;
-	for (int i = 0; i < atoms->N; i ++) foutput << atoms->print(i) << endl;
+	if (rho_flag){
+		foutput << "H\n" << atoms->types_count(rho_flag) << endl;
+		foutput << "Direct" << endl;
+		for (int i = 0; i < atoms->N; i ++)
+			if (atoms->_fix_area_flag[i] == rho_flag) foutput << atoms->print(i)  << endl;
+	}
+	else {
+		foutput << "H\n" << atoms->N << endl;
+		foutput << "Direct" << endl;
+		for (int i = 0; i < atoms->N; i ++) foutput << atoms->print(i) << endl;
+
+	}
 
 	foutput << "\n" << rho->wall[0] << "\t" << rho->wall[1] << "\t" << rho->wall[1];
 
-	for( int i = 0; i < rho->N; i++) {
-		if (i%5 == 0) foutput << "\n";
-		foutput << rho->_to_print[i] << " ";
+	if (rho_flag){
+		for( int i = 0; i < rho->N; i++) {
+			if (i%5 == 0) foutput << "\n";
+			if (rho->_fix_area_flag[i] == rho_flag)
+				foutput << rho->_to_print[i] << " ";
+			else
+			  foutput << 0 << " ";
+		}
+	} else {
+		for( int i = 0; i < rho->N; i++) {
+			if (i%5 == 0) foutput << "\n";
+			foutput << rho->_to_print[i] << " ";
+		}
 	}
 
 	foutput.close();
@@ -92,6 +122,58 @@ int box::write(string input_name){
 	return 0;
 }
 
+int box::write_cube(string input_name, int rho_flag){
+	if (atoms->types_count(rho_flag) < 1) return 0;
+
+	ofstream foutput;
+	input_name = input_name + to_string(write_flag)+".cube";
+	write_flag++;
+	foutput.open(input_name);
+	cerr << "start writing box \n" << endl;
+
+	foutput << "CUBE FILE CONVERTED FROM VASP format" << endl;
+	foutput << "OUTTER LOOP: X, MIDDLE LOOP: Y, INNER LOOP: Z" << endl;
+	foutput << atoms->types_count(rho_flag) << "     0.000000     0.000000     0.000000" << endl;
+	double lat_print[3];
+	for (int l = 0; l < 3; l ++) lat_print[l] = lat[l]/rho->wall[l] / Ab;
+	foutput << rho->wall[0] << "	" << lat_print[0] << "    0.000000    0.000000" << endl;
+	foutput << rho->wall[1] << "	0.000000    " << lat_print[1] << "    0.000000" << endl;
+	foutput << rho->wall[2] << "	0.000000    0.000000    " << lat_print[2] << endl;
+//	int N_atom_print = 0;
+//	for (int i = 0; i < N_atom; i ++) if(atom_flag == 0) N_atom_print++;
+	if (rho_flag){
+		for (int i = 0; i < atoms->N; i ++)
+			if (atoms->_fix_area_flag[i] == rho_flag) foutput << "1     0.000000     " << atoms->print_coeff(i, lat_print, Ab) << endl;
+	}
+	else {
+		for (int i = 0; i < atoms->N; i ++) foutput << "1     0.000000     " << atoms->print_coeff(i, lat_print, Ab) << endl;
+
+	}
+
+	if (rho_flag){
+		for( int ix = 0; ix < rho->wall[0]; ix++)
+			for (int iy = 0; iy < rho->wall[1]; iy++)
+				for (int iz = 0; iz < rho->wall[2]; iz++){
+					if (iz%6 == 5) foutput << "\n";
+					if (rho->_fix_area_flag[iz*wall[0]*wall[1]+iy*wall[0]+ix] == rho_flag)
+						foutput << rho->_to_print[iz*wall[0]*wall[1]+iy*wall[0]+ix]/100 << " ";
+					else
+					  foutput << 0 << " ";
+				}
+
+	} else {
+		for( int ix = 0; ix < rho->wall[0]; ix++)
+			for (int iy = 0; iy < rho->wall[1]; iy++)
+				for (int iz = 0; iz < rho->wall[2]; iz++){
+					if (iz%6 == 5) foutput << "\n";
+					foutput << rho->_to_print[iz*wall[0]*wall[1]+iy*wall[0]+ix]/100 << " ";
+				}
+	}
+
+	foutput.close();
+	cerr << "succesful writin box" << endl;
+	return 0;
+}
 
 
 int box::cut_unnes(double rho_cut){
@@ -137,7 +219,6 @@ int box::create_areas(const double _rho_cut){
 	rho_cut = _rho_cut;
 	int k = 1;
 	area = new areas(atoms, rho->N_electron);
-
 	for( int i = 0; i < rho->N; i++){
 		if ( rho->_in[i] < rho_cut || rho->_flag[i] != 0 ) continue;
 //		cerr << "add new area" << endl;
@@ -148,39 +229,50 @@ int box::create_areas(const double _rho_cut){
 	}
   atom_flaged();
 	area->analysis(rho_cut);
+	//cerr << "1" << endl;
 	atom_connect();
+//	cerr << "2" << endl;
 	return 0;
 }
 
 int box::atom_connect(){
-	int level = (atoms->N + rho->N_electron) * 0.2;
-	level = 20; // atoms + electrons more than 20 - unreal
+	cerr << "new" << endl;
 	for( int i = 0; i < atoms->N; i++)
 		if(atoms->_fix_area[i] == 0 && (atoms->neigbours_atom[i] + atoms->neigbours_electron[i]) < level) {
-			//cerr << "rho_cut " << rho_cut << endl;
-			rho->fix_area(atoms->flag[i]);
-			atoms->fix_area(atoms->flag[i]);
+			cerr << "add atom " << i << endl;
+			rho->fix_area(atoms->flag[i], atoms->neigbours_atom[i], atoms->neigbours_electron[i]);
+
+			atoms->fix_area(atoms->flag[i], atoms->neigbours_atom[i], atoms->neigbours_electron[i]);
 		}
 	return 0;
 }
 
-int box::print_areas(string input_name){
+int box::print_areas(string input_name, int split_flag){
 	rho->fix_to_print();
-	write(input_name);
+	if (!split_flag) {
+		write(input_name, 0);
+	}else {
+		for (int i = 1; i < 50; i++){
+			cerr << "start writing" << endl;
+			write_cube(input_name, i);
+		}
+	}
 	return 0;
 }
 
-int box::make_molecule(string input_name){
+int box::make_molecule(string output_name, int split_flag){
+	cerr << "split flag " << split_flag << endl;
 	double start = rho->min;
   double stop = rho->max;
 	double step = (stop-start) / 100.0;
-
 	for( double rho_cut = start; rho_cut < stop; rho_cut+= step){
   	create_areas(rho_cut);
 	  clear();
 	}
 
-	print_areas("output/CHGCAR");
+	cerr << "ready to print" << endl;
+	cerr << "split flag " << split_flag << endl;
+	print_areas(output_name, split_flag);
 	return 0;
 }
 

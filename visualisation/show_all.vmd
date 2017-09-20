@@ -1,0 +1,66 @@
+# $Id: au-iso.vmd,v 1.2 2004/05/21 15:50:29 akohlmey Exp $
+# Display settings
+color Display {Background} white
+color Axes {Labels} black
+display projection   Orthographic
+display nearclip set 0.000000
+display farclip  set 10.000000
+display depthcue   off
+# store the molecule id for later use
+
+#set updmol [mol new {chg.1.cube} type cube waitfor all volsets 0]
+#mol addfile {chg.2.cube} type cube waitfor all volsets 0
+
+set stop 5
+set start 0
+for { set i  $start} {$i < $stop } { incr i } {
+set updmol [mol new CHGCAR${i}.cube type cube waitfor all volsets 0]
+
+mol delrep 0 top
+mol representation CPK 0.700000 0.300000 20.000000 16.000000
+mol color Element
+mol material Opaque
+mol addrep top
+
+mol representation Isosurface 0.004 0.0 0.0 0.0
+mol color ColorID ${i}
+mol material Opaque
+mol selection {all}
+# store name of the isosurface representation (id=1) for later use
+mol addrep top
+set updrep [mol repname top 1]
+
+# mol rename top {Xe}
+
+
+# rotate z by -90
+# rotate x by -90
+# rotate x by 2
+# rotate y by 3
+# rotate x by 2
+
+# use the volumetric data set for the isosurface corresponding to the frame.
+# $updmol contains the id of the molecule and $updrep the (unique) name of
+# the isosurface representation
+#
+proc update_iso {args} {
+    global updmol
+    global updrep1
+
+    # get representation id and return if invalid
+    set repid [mol repindex $updmol $updrep]
+    if {$repid < 0} { return }
+
+    # update representation but replace the data set
+    # id with the current frame number.
+    set frame [molinfo $updmol get frame]
+    lassign [molinfo $updmol get "{rep $repid}"] rep
+    mol representation [lreplace $rep 2 0 $frame]
+    mol color ColorID $i
+    mol modrep $repid $updmol
+
+}
+
+#trace variable vmd_frame($updmol) w update_iso
+animate goto 0
+}

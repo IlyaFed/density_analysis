@@ -21,12 +21,14 @@ areas::areas(atom* _atoms, int _N_electron){
   last->count = 1;
   start = last;
   last->next = NULL;
-  last->prev = NULL;
   }
 
 areas::~areas(){
-    if (start != NULL)
+    while (start){
+      last = start->next;
       delete start;
+      start = last;
+    }
     start = NULL;
     last = NULL;
   }
@@ -167,19 +169,19 @@ int areas::add(){
   if (N == 1)
     return 0;
   mass += last->mass;
+
   last->next = new area_tree();
-  (last->next)->prev = last;
   last = last->next;
-  last->count = (last->prev)->count + 1;
+  last->count = N;
   last->next = NULL;
   return 0;
 }
 
 
 area_tree::~area_tree(){
-	if (next != NULL){
-		delete next;
-	}
+	//if (next != NULL){
+	//	delete next;
+	//}
 }
 
 area_tree::area_tree(){}

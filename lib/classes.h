@@ -17,15 +17,19 @@ public:
 	int *neigbours_atom;
 	int *neigbours_electron;
 	int *_fix_area = NULL;
+	int *_fix_area_flag = NULL;
 	int _last_fix = 1;
 
 	atom(int _N);
 	~atom();
 	int clear();
 	double* x(int i);
+	char* print_coeff(int i, double* lat, double coeff);
 	char* print(int i);
+
 	int add(int i, double* coord);
-	int fix_area(int count);
+	int fix_area(int count, int neig_at, int neig_el);
+	int types_count(int type_flag);
 };
 
 class density{
@@ -33,6 +37,7 @@ public:
 	double *_in = NULL;
 	double *_to_print = NULL;
 	int *_fix_area = NULL;
+	int *_fix_area_flag = NULL;
 	int _last_fix = 1;
 	int N;
 	double min;
@@ -40,22 +45,23 @@ public:
 	int *_flag = NULL;
 	int wall[3];
 	int N_electron;
+	int *level;
 
-	density(int* _wall);
+	density(int* _wall, int* get_level);
 	~density();
 	int clear();
 	double* in(int* coord);
 	double* in(int a, int b, int c);
 	int* flag(int* x);
 	int* flag(int x, int y, int z);
-	int fix_area(int count);
+	int fix_area(int count, int neig_at, int neig_el);
 	int fix_to_print();
 };
 
 class area_tree
 {
 public:
-	area_tree* prev = NULL;
+
 	area_tree* next = NULL;
 
 	int count;
@@ -100,14 +106,17 @@ public:
 	density *rho = NULL;
 	areas *area = NULL;
 	atom *atoms = NULL;
+	double lat[3];
 	int wall[3];
 	double rho_cut = 0;
-
+	int write_flag = 0;
+	int level = 20; // atoms + electrons more than 20 - unreal
 	box(FILE* input);
 	~box();
 
 	int read(FILE* input);
-	int write(string input_name);
+	int write(string input_name, int rho_flag);
+	int write_cube(string input_name, int rho_flag);
 	int cut_unnes(double rho_cut);
 
 	int create_areas(double density_cut);
@@ -115,9 +124,9 @@ public:
 	int atom_flaged();
 	int print_atoms(string name);
 	int atom_connect();
-	int print_areas(string input_name);
+	int print_areas(string input_name, int split_flag);
 
-	int make_molecule(string input_name);
+	int make_molecule(string input_name, int split_flag);
 
 	int* x(int coord);
 	int len(int* x);

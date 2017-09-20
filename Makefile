@@ -1,6 +1,6 @@
 all:
 	g++ -std=c++11 -ggdb lib/density.cpp lib/areas.cpp lib/atom.cpp lib/box.cpp main.cpp -o p
-	./p source_for_test/CHGCAR_2
+	./p source_for_test/CHGCAR_1
 	rm p
 	rm -r p.dSYM
 
