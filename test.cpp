@@ -57,7 +57,7 @@ int main(int argc, char* argv[]){
     test_box->clear();
 	}
 
-	test_box->print_areas("output/CHGCAR");
+	test_box->print_areas("output/CHGCAR", 0);
 	neigbours_atom_out.close();
 	neigbours_electron_out.close();
 	neigbours_comm_out.close();
